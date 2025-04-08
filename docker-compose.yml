@@ -4,6 +4,6 @@ services:
   ch552_compiler:
     build: .
     volumes:
-      - ./project:/project
-    working_dir: /project
+      - ./template:/template
+    working_dir: /template
     command: make bin
