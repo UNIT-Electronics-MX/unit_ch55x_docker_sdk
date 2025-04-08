@@ -5,8 +5,8 @@ cd "$SCRIPT_DIR"
 echo "🚀 Compilando CH552 con Docker Compose..."
 docker compose run --rm ch552_compiler
 
-if [ -f "$SCRIPT_DIR/project/main.bin" ]; then
-    echo "✅ Compilación exitosa: project/main.bin generado."
+if [ -f "$SCRIPT_DIR/template/main.bin" ]; then
+    echo "✅ Compilación exitosa: template/main.bin generado."
 else
     echo "❌ Error durante la compilación."
 fi
