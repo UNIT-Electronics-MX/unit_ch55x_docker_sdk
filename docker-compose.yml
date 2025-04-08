@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  ch552_compiler:
+    build: .
+    volumes:
+      - ./project:/project
+    working_dir: /project
+    command: make bin
