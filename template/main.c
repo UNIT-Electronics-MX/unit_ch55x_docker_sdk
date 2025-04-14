@@ -3,7 +3,7 @@
 #include "src/gpio.h"  
 #include "src/delay.h"  
 
-#define PIN_LED P30
+#define PIN_LED P34
 
 void main(void)
 {
