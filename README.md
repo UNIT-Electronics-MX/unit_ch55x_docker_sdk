@@ -1,74 +1,129 @@
-# CH552 Docker SDK 🧰
-
-> 🚀 Portable SDK for CH552 development using SDCC inside Docker containers. Works on both Linux and Windows without needing to install SDCC or setup toolchains manually.
-
-## 📦 What's included
-
-- ✅ **Dockerfile** with SDCC, Make, and Python preinstalled
-- ✅ **`docker-compose.yml`** for easy build and run
-- ✅ **Cross-platform scripts**: `compilar.sh` (Linux) and `compilar.bat` (Windows)
-- ✅ **Blink example** for CH552 in `Blink/` folder
-- ✅ **Makefile-based build system** ready for CH55x projects
-- ✅ No dependencies outside of Docker
 
 
+# CH552 Docker SDK
 
-## 🛠 Requirements
+> Portable SDK for CH552 firmware development using SDCC inside Docker containers. Includes a cross-platform CLI tool (`spkg`) to simplify builds on both Linux and Windows.
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop) installed on your system
-- (Optional) `make` and `python3` if running without Docker
+## Features
+
+- Unified CLI tool: `spkg` for Linux, macOS, and Windows (via Git Bash)
+- No need to install SDCC or toolchains manually
+- Fully Dockerized environment for isolated builds
+- Makefile-based project system compatible with CH552/CH55x
+- Example project provided in `examples/`
 
 
-## 🚀 Getting Started
+## Requirements
 
-### 🔧 Linux
+### Common (All Platforms)
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop)
+
+### Linux/macOS
+
+- Git
+- Python 3
+- Bash shell
+- Superuser privileges required to run Docker
+
+### Windows
+
+- [Git Bash](https://gitforwindows.org/)
+- Docker Desktop with WSL2 backend or Hyper-V enabled
+
+> Note: Running `spkg` on Linux may require `sudo` if your user is not part of the `docker` group. You can add your user with:  
+> `sudo usermod -aG docker $USER && newgrp docker`
+
+## Installation
+
+Clone the repository:
 
 ```bash
-chmod +x compilar.sh
-./compilar.sh
+git clone https://github.com/your-username/ch552-docker-sdk.git
+cd ch552-docker-sdk/spkg
+chmod +x spkg
 ```
 
-### 🪟 Windows
+(Optional) Install globally:
 
-Double-click on `compilar.bat`
+```bash
+sudo ln -s "$(pwd)/spkg" /usr/local/bin/spkg
+```
 
+You can now run `spkg` from any location.
 
-## 🧪 Result
+---
 
-- The output binary file will be generated at:
-  ```
-  Blink/main.bin
-  ```
+## Usage
 
-You can flash it using `chprog.py`, [wchusbdfu](https://github.com/DeqingSun/ch554tools), [WCHISPTool](https://www.wch-ic.com/downloads/WCHISPTool_Setup_exe.html) or any other uploader for CH552.
+### Show help
 
+```bash
+spkg --help
+```
 
- > **Note:** The `WCHISPTool` is the official tool from WCH, but it requires a Windows environment. [Flash Firmware to Cocket Nova CH552G Using WCHISPStudio](https://www.hackster.io/mrcronos/flash-firmware-to-cocket-nova-ch552g-using-wchispstudio-f91103).
+### Build a project
 
-## 📁 Folder Structure
+```bash
+spkg -p ./examples/Blink
+```
+
+### Run `make clean`, `all`, `hex`, etc.
+
+```bash
+spkg -p ./examples/Blink clean
+spkg -p ./examples/Blink all
+spkg -p ./examples/Blink hex
+```
+
+### Build Docker image
+
+```bash
+spkg compose
+```
+
+---
+
+## Output
+
+The compiled binary will be generated at:
+
+```
+examples/Blink/build/main.bin
+```
+
+You can flash it using:
+
+- `tools/chprog.py`
+- [wchusbdfu](https://github.com/DeqingSun/ch554tools)
+- [WCHISPTool](https://www.wch-ic.com/downloads/WCHISPTool_Setup_exe.html)
+
+---
+
+## Project Structure
 
 ```
 ch552-docker-sdk/
-├── Blink/              # Example project (main.c, src/, tools/)
-├── Dockerfile          # Image with SDCC, make, python
-├── docker-compose.yml  # Docker Compose wrapper
-├── compilar.sh         # Linux build script
-├── compilar.bat        # Windows build script
+├── spkg/                   # Self-contained CLI build system
+│   ├── spkg                # CLI launcher (bash script)
+│   ├── Dockerfile          # SDCC-based build environment
+│   └── docker-compose.yml  # Container configuration
+├── examples/               # Example CH552 projects
+│   └── Blink/              # Blink example (main.c, src/, tools/, Makefile)
 └── README.md
 ```
 
+---
 
-## 🧱 Based on
+## Author
 
-This project includes a minimal USB CDC OLED Terminal example by [Stefan Wagner](https://github.com/wagiminator) under Common Creative License.
+Developed by Cesar Bautista — Embedded systems engineer and tooling enthusiast.  
+Includes portions of public domain and MIT-licensed work by [Stefan Wagner](https://github.com/wagiminator).
 
-## 🧑‍💻 Author
+---
 
-Made with 🛠️ by Cesar Bautist a — Embedded systems & tooling enthusiast.
-
-
-## 📜 License
+## License
 
 This SDK is released under the MIT License.  
-Example code inside `Blink/` may retain original licenses from contributors (MIT/GPL).
+Example code inside `examples/` may retain original licenses (MIT/GPL/CC-BY).
 

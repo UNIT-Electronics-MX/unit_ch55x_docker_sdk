@@ -1,9 +1,0 @@
-version: '3'
-
-services:
-  ch552_compiler:
-    build: .
-    volumes:
-      - ./template:/template
-    working_dir: /template
-    command: make bin
