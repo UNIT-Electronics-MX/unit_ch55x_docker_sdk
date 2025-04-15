@@ -1,10 +1,13 @@
-/** @file CH552-PWM.c (SOURCE)
+/*
+ * example - Derived Version
+ * 
+ * Original work by Stefan Wagner
+ * https://github.com/wagiminator/CH552-USB-CDC-OLED-Terminal
  *
- *  @brief CH552 PWM example
+ * Licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License.
+ * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/
  *
- *  @author @CesarBautista 
- *
- *  @bug No known bugs.
+ * Modifications by Cesar Bautista for integration into Docker SDK
  */
 
 /******************************************************************************
