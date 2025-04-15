@@ -30,6 +30,7 @@
 
 - [Git Bash](https://gitforwindows.org/)
 - Docker Desktop with WSL2 backend or Hyper-V enabled
+- MinGW64 (included with Git Bash) for `make` command
 
 > Note: Running `spkg` on Linux may require `sudo` if your user is not part of the `docker` group. You can add your user with:  
 > `sudo usermod -aG docker $USER && newgrp docker`
@@ -114,16 +115,21 @@ ch552-docker-sdk/
 ```
 
 ---
-
-## Author
-
-Developed by Cesar Bautista — Embedded systems engineer and tooling enthusiast.  
-Includes portions of public domain and MIT-licensed work by [Stefan Wagner](https://github.com/wagiminator).
-
----
-
 ## License
 
-This SDK is released under the MIT License.  
-Example code inside `examples/` may retain original licenses (MIT/GPL/CC-BY).
+This SDK is released under the [MIT License](LICENSE).
 
+You may freely use, modify, and distribute the SDK framework and tools (`spkg`, `compilar.sh`, etc.) under the terms of the MIT license.
+
+### Notes on Example Projects
+
+Some example projects inside the `examples/` directory are derived from the work of Stefan Wagner:  
+[https://github.com/wagiminator/Development-Boards](https://github.com/wagiminator/CH552-USB-CDC-OLED-Terminal)
+
+These files are licensed under the  
+**Creative Commons Attribution-ShareAlike 3.0 Unported License (CC BY-SA 3.0)**.
+
+Each source file includes a license header stating its origin and terms of use.
+
+You must credit the original author and distribute modifications under the same license.  
+See the full license at: [http://creativecommons.org/licenses/by-sa/3.0/](http://creativecommons.org/licenses/by-sa/3.0/)
