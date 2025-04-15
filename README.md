@@ -40,7 +40,7 @@
 Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/ch552-docker-sdk.git
+git clone git@github.com:UNIT-Electronics-MX/unit_ch55x_docker_sdk.git
 cd ch552-docker-sdk/spkg
 chmod +x spkg
 ```
