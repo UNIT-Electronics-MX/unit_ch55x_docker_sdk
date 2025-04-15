@@ -85,6 +85,13 @@ spkg compose
 
 ---
 
+### Create a New Project
+
+To create a new project, use the `init` command:
+> note: This command will create a new directory with the specified name.
+```bash
+ ./spkg/spkg init examples/project
+ ```
 ## Output
 
 The compiled binary will be generated at:

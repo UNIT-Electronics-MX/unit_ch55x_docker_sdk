@@ -32,6 +32,22 @@ if [[ "$1" == "--help" ]]; then
     print_help
     exit 0
 fi
+if [[ "$1" == "init" && -n "$2" ]]; then
+    DEST_DIR="$2"
+    TEMPLATE_DIR="$SCRIPT_DIR/template_project"
+
+    if [ -d "$DEST_DIR" ]; then
+        echo "❌ El directorio '$DEST_DIR' ya existe."
+        exit 1
+    fi
+
+    echo "🧱 Creando nuevo proyecto en '$DEST_DIR'..."
+    cp -r "$TEMPLATE_DIR" "$DEST_DIR"
+
+    echo "✅ Proyecto base creado. Puedes compilarlo con:"
+    echo "   spkg -p $DEST_DIR"
+    exit 0
+fi
 
 if [[ "$1" == "compose" ]]; then
     echo "🔧 Construyendo imagen con Docker Compose..."
