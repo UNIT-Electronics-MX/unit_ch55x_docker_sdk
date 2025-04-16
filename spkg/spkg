@@ -3,12 +3,29 @@
 VERSION="1.0.0"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+# Detectar si estamos en Git Bash sobre Windows
+IS_WINDOWS=false
+if grep -qiE "(msys|cygwin|mingw)" <<< "$OSTYPE"; then
+    IS_WINDOWS=true
+fi
+
+# Convertir ruta de /c/... a C:/... en Windows (para Docker)
+convert_path_windows() {
+    local input="$1"
+    if $IS_WINDOWS; then
+        (cd "$input" && pwd -W 2>/dev/null) || echo "$input"
+    else
+        realpath "$input"
+    fi
+}
+
 print_help() {
     echo "spkg - CH552 SDK CLI Tool"
     echo ""
     echo "Uso:"
     echo "  spkg -p <ruta> [comando]    Ejecuta make <comando> en la ruta"
     echo "  spkg compose                Ejecuta docker compose build"
+    echo "  spkg init <ruta>            Crea nuevo proyecto basado en template_project/"
     echo "  spkg --version              Muestra la versión"
     echo "  spkg --help                 Muestra esta ayuda"
     echo ""
@@ -20,18 +37,22 @@ print_help() {
     echo ""
     echo "Ejemplos:"
     echo "  spkg -p ./template"
-    echo "  spkg -p ./examples/Blink/ clean"
+    echo "  spkg -p ./examples/Blink clean"
 }
 
+# Mostrar versión
 if [[ "$1" == "--version" ]]; then
     echo "spkg version $VERSION"
     exit 0
 fi
 
+# Mostrar ayuda
 if [[ "$1" == "--help" ]]; then
     print_help
     exit 0
 fi
+
+# Crear nuevo proyecto basado en template_project/
 if [[ "$1" == "init" && -n "$2" ]]; then
     DEST_DIR="$2"
     TEMPLATE_DIR="$SCRIPT_DIR/template_project"
@@ -49,30 +70,39 @@ if [[ "$1" == "init" && -n "$2" ]]; then
     exit 0
 fi
 
+# Build de imagen docker
 if [[ "$1" == "compose" ]]; then
-    echo "🔧 Construyendo imagen con Docker Compose..."
+    echo "🔧 Construyendo imagen Docker..."
     docker compose -f "$SCRIPT_DIR/docker-compose.yml" build
     exit $?
 fi
 
+# Compilación de proyecto
 if [[ "$1" == "-p" && -n "$2" ]]; then
     PROJECT_DIR="$2"
-    MAKE_CMD="${3:-bin}"  # Por defecto 'bin'
-    FULL_PATH="$(realpath "$PROJECT_DIR")"
+    MAKE_CMD="${3:-bin}"
 
-    if [ ! -f "$FULL_PATH/Makefile" ]; then
-        echo "❌ No se encontró un Makefile en $FULL_PATH"
+    if [ ! -f "$PROJECT_DIR/Makefile" ]; then
+        echo "❌ No se encontró un Makefile en $PROJECT_DIR"
         exit 1
     fi
 
-    echo "🚀 Ejecutando make $MAKE_CMD en: $FULL_PATH"
-    docker compose -f "$SCRIPT_DIR/docker-compose.yml" run --rm \
-        -v "$FULL_PATH":/project -w /project ch552_compiler make $MAKE_CMD
+    HOST_PATH="$(convert_path_windows "$PROJECT_DIR")"
 
-    # Verifica si se generó el bin solo si se usó make bin o all
+    CONTAINER_PATH="/mnt/project"
+    
+
+
+    echo "🚀 Ejecutando make $MAKE_CMD en: $HOST_PATH"
+    docker compose -f "$SCRIPT_DIR/docker-compose.yml" run --rm \
+    -v "$HOST_PATH:$CONTAINER_PATH" \
+    --workdir "$CONTAINER_PATH" \
+    ch552_compiler make "$MAKE_CMD"
+
+
     if [[ "$MAKE_CMD" == "bin" || "$MAKE_CMD" == "all" ]]; then
-        if [ -f "$FULL_PATH/build/main.bin" ]; then
-            echo "✅ Compilación exitosa: $FULL_PATH/build/main.bin generado."
+        if [ -f "$PROJECT_DIR/build/main.bin" ]; then
+            echo "✅ Compilación exitosa: $PROJECT_DIR/build/main.bin generado."
         else
             echo "❌ Error durante la compilación."
         fi

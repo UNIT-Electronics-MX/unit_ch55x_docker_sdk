@@ -1,81 +1,90 @@
-#!/bin/bash
+@echo off
+SETLOCAL ENABLEEXTENSIONS
 
-VERSION="1.0.0"
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+set "SCRIPT_DIR=%~dp0"
+if not "%SCRIPT_DIR:~-1%"=="\" set "SCRIPT_DIR=%SCRIPT_DIR%\"
+set "DOCKER_FILE=%SCRIPT_DIR%docker-compose.yml"
 
-# Función compatible con Git Bash para rutas absolutas
-realpath_cross() {
-    if command -v realpath >/dev/null 2>&1; then
-        realpath "$1"
-    else
-        python3 -c "import os; print(os.path.abspath('$1'))"
-    fi
-}
+echo SCRIPT_DIR is [%SCRIPT_DIR%]
+echo DOCKER_FILE is [%DOCKER_FILE%]
 
-print_help() {
-    echo "spkg - CH552 SDK CLI Tool (Git Bash Compatible)"
-    echo ""
-    echo "Uso:"
-    echo "  spkg -p <ruta> [comando]    Ejecuta 'make <comando>' en la ruta"
-    echo "  spkg compose                Ejecuta docker compose build"
-    echo "  spkg --version              Muestra la versión"
-    echo "  spkg --help                 Muestra esta ayuda"
-    echo ""
-    echo "Comandos make disponibles:"
-    echo "  all      -> Compila y construye todo"
-    echo "  bin      -> Genera binario"
-    echo "  hex      -> Genera archivo HEX"
-    echo "  clean    -> Limpia los archivos generados"
-    echo ""
-    echo "Ejemplos:"
-    echo "  spkg -p ./template"
-    echo "  spkg -p ./examples/Blink/ clean"
-}
+if "%1"=="" goto :help
 
-# Mostrar versión
-if [[ "$1" == "--version" ]]; then
-    echo "spkg version $VERSION"
-    exit 0
-fi
+if "%1"=="--version" goto :version
+if "%1"=="--help" goto :help
+if "%1"=="compose" goto :compose
+if "%1"=="cop" goto :compose
+if "%1"=="init" goto :init
+if "%1"=="-p" goto :build
 
-# Mostrar ayuda
-if [[ "$1" == "--help" ]]; then
-    print_help
-    exit 0
-fi
+goto :help
 
-# Construcción de contenedor
-if [[ "$1" == "compose" ]]; then
-    echo "🔧 Construyendo imagen Docker..."
-    docker compose -f "$SCRIPT_DIR/docker-compose.yml" build
-    exit $?
-fi
+:version
+echo spkg version 1.0.0
+exit /b
 
-# Compilación por ruta
-if [[ "$1" == "-p" && -n "$2" ]]; then
-    PROJECT_DIR="$2"
-    MAKE_CMD="${3:-bin}"
-    FULL_PATH="$(realpath_cross "$PROJECT_DIR")"
+:help
+echo(
+echo spkg - CH552 SDK CLI Tool (Windows)
+echo(
+echo Usage:
+echo   spkg -p ^<path^> [command]    Run 'make [command]' in the path
+echo   spkg compose                  Build the Docker image
+echo   spkg init ^<path^>            Create new project from template_project
+echo   spkg --version                Show version
+echo   spkg --help                   Show this help
+echo(
+exit /b
 
-    if [ ! -f "$FULL_PATH/Makefile" ]; then
-        echo "❌ No se encontró un Makefile en $FULL_PATH"
-        exit 1
-    fi
+:init
+if "%2"=="" (
+    echo Error: destination path is missing.
+    exit /b
+)
+if exist "%2" (
+    echo Error: directory "%2" already exists.
+    exit /b
+)
+echo Creating new project at "%2"...
+xcopy /E /I /Y "%SCRIPT_DIR%template_project" "%2"
+echo Project created.
+exit /b
 
-    echo "🚀 Ejecutando 'make $MAKE_CMD' en: $FULL_PATH"
-    docker compose -f "$SCRIPT_DIR/docker-compose.yml" run --rm \
-        -v "$FULL_PATH":/project -w /project ch552_compiler make $MAKE_CMD
+:compose
+echo Building Docker image from: %DOCKER_FILE%
+call docker compose -f "%DOCKER_FILE%" build
+if errorlevel 1 (
+    echo Docker Compose build failed.
+) else (
+    echo Docker image built successfully.
+)
+exit /b
 
-    # Verifica binario si se compila
-    if [[ "$MAKE_CMD" == "bin" || "$MAKE_CMD" == "all" ]]; then
-        if [ -f "$FULL_PATH/build/main.bin" ]; then
-            echo "✅ Compilación exitosa: $FULL_PATH/build/main.bin generado."
-        else
-            echo "❌ Error durante la compilación."
-        fi
-    fi
-    exit 0
-fi
+:build
+if "%2"=="" (
+    echo Error: you must specify the project path.
+    exit /b
+)
 
-print_help
-exit 1
+set "PROJECT_DIR=%~f2"
+set "MAKE_CMD=%3"
+if "%MAKE_CMD%"=="" set MAKE_CMD=bin
+
+if not exist "%PROJECT_DIR%\Makefile" (
+    echo Error: Makefile not found in %PROJECT_DIR%
+    exit /b
+)
+
+echo Running 'make %MAKE_CMD%' in: %PROJECT_DIR%
+
+docker compose -f "%DOCKER_FILE%" run --rm ^
+    -v "%PROJECT_DIR%:/project" ^
+    --workdir /project ^
+    ch552_compiler make %MAKE_CMD%
+
+IF EXIST "%PROJECT_DIR%\build\main.bin" (
+    echo Build successful: %PROJECT_DIR%\build\main.bin generated.
+) ELSE (
+    echo Error: build failed.
+)
+exit /b

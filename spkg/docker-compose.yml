@@ -1,11 +1,6 @@
-version: '3'
-
 services:
   ch552_compiler:
     build:
       context: .
       dockerfile: Dockerfile
     image: ch552-compiler
-    volumes:
-      - .:/tmp
-    working_dir: /tmp
