@@ -1,0 +1,861 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ANSI-C Compiler
+                                      3 ; Version 4.2.0 #13081 (Linux)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module usb_composite
+                                      6 	.optsdcc -mmcs51 --model-small
+                                      7 	
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _KBD_map
+                                     12 	.globl _HID_sendReport
+                                     13 	.globl _JOY_report
+                                     14 	.globl _MOUSE_report
+                                     15 	.globl _CON_report
+                                     16 	.globl _KBD_report
+                                     17 	.globl _EP2_buffer
+                                     18 	.globl _EP1_buffer
+                                     19 	.globl _EP0_buffer
+                                     20 	.globl _JOY_move_PARM_2
+                                     21 	.globl _MOUSE_move_PARM_2
+                                     22 	.globl _KBD_press
+                                     23 	.globl _KBD_release
+                                     24 	.globl _KBD_type
+                                     25 	.globl _KBD_releaseAll
+                                     26 	.globl _KBD_print
+                                     27 	.globl _CON_press
+                                     28 	.globl _CON_release
+                                     29 	.globl _CON_type
+                                     30 	.globl _MOUSE_press
+                                     31 	.globl _MOUSE_release
+                                     32 	.globl _MOUSE_move
+                                     33 	.globl _MOUSE_wheel
+                                     34 	.globl _JOY_press
+                                     35 	.globl _JOY_release
+                                     36 	.globl _JOY_move
+                                     37 ;--------------------------------------------------------
+                                     38 ; special function registers
+                                     39 ;--------------------------------------------------------
+                                     40 	.area RSEG    (ABS,DATA)
+      000000                         41 	.org 0x0000
+                                     42 ;--------------------------------------------------------
+                                     43 ; special function bits
+                                     44 ;--------------------------------------------------------
+                                     45 	.area RSEG    (ABS,DATA)
+      000000                         46 	.org 0x0000
+                                     47 ;--------------------------------------------------------
+                                     48 ; overlayable register banks
+                                     49 ;--------------------------------------------------------
+                                     50 	.area REG_BANK_0	(REL,OVR,DATA)
+      000000                         51 	.ds 8
+                                     52 ;--------------------------------------------------------
+                                     53 ; internal ram data
+                                     54 ;--------------------------------------------------------
+                                     55 	.area DSEG    (DATA)
+      000000                         56 _MOUSE_move_PARM_2:
+      000000                         57 	.ds 1
+      000001                         58 _JOY_move_PARM_2:
+      000001                         59 	.ds 1
+                                     60 ;--------------------------------------------------------
+                                     61 ; overlayable items in internal ram
+                                     62 ;--------------------------------------------------------
+                                     63 ;--------------------------------------------------------
+                                     64 ; indirectly addressable internal ram data
+                                     65 ;--------------------------------------------------------
+                                     66 	.area ISEG    (DATA)
+                                     67 ;--------------------------------------------------------
+                                     68 ; absolute internal ram data
+                                     69 ;--------------------------------------------------------
+                                     70 	.area IABS    (ABS,DATA)
+                                     71 	.area IABS    (ABS,DATA)
+                                     72 ;--------------------------------------------------------
+                                     73 ; bit data
+                                     74 ;--------------------------------------------------------
+                                     75 	.area BSEG    (BIT)
+                                     76 ;--------------------------------------------------------
+                                     77 ; paged external ram data
+                                     78 ;--------------------------------------------------------
+                                     79 	.area PSEG    (PAG,XDATA)
+                                     80 ;--------------------------------------------------------
+                                     81 ; external ram data
+                                     82 ;--------------------------------------------------------
+                                     83 	.area XSEG    (XDATA)
+                           000000    84 _EP0_buffer	=	0x0000
+                           00000A    85 _EP1_buffer	=	0x000a
+                           000014    86 _EP2_buffer	=	0x0014
+      000000                         87 _KBD_report::
+      000000                         88 	.ds 8
+      000008                         89 _CON_report::
+      000008                         90 	.ds 3
+      00000B                         91 _MOUSE_report::
+      00000B                         92 	.ds 5
+      000010                         93 _JOY_report::
+      000010                         94 	.ds 4
+                                     95 ;--------------------------------------------------------
+                                     96 ; absolute external ram data
+                                     97 ;--------------------------------------------------------
+                                     98 	.area XABS    (ABS,XDATA)
+                                     99 ;--------------------------------------------------------
+                                    100 ; external initialized ram data
+                                    101 ;--------------------------------------------------------
+                                    102 	.area HOME    (CODE)
+                                    103 	.area GSINIT0 (CODE)
+                                    104 	.area GSINIT1 (CODE)
+                                    105 	.area GSINIT2 (CODE)
+                                    106 	.area GSINIT3 (CODE)
+                                    107 	.area GSINIT4 (CODE)
+                                    108 	.area GSINIT5 (CODE)
+                                    109 	.area GSINIT  (CODE)
+                                    110 	.area GSFINAL (CODE)
+                                    111 	.area CSEG    (CODE)
+                                    112 ;--------------------------------------------------------
+                                    113 ; global & static initialisations
+                                    114 ;--------------------------------------------------------
+                                    115 	.area HOME    (CODE)
+                                    116 	.area GSINIT  (CODE)
+                                    117 	.area GSFINAL (CODE)
+                                    118 	.area GSINIT  (CODE)
+                                    119 ;	src/usb_composite.c:17: __xdata uint8_t KBD_report[]   = {1,0,0,0,0,0,0,0};
+      000000 90r00r00         [24]  120 	mov	dptr,#_KBD_report
+      000003 74 01            [12]  121 	mov	a,#0x01
+      000005 F0               [24]  122 	movx	@dptr,a
+      000006 90r00r01         [24]  123 	mov	dptr,#(_KBD_report + 0x0001)
+      000009 E4               [12]  124 	clr	a
+      00000A F0               [24]  125 	movx	@dptr,a
+      00000B 90r00r02         [24]  126 	mov	dptr,#(_KBD_report + 0x0002)
+      00000E F0               [24]  127 	movx	@dptr,a
+      00000F 90r00r03         [24]  128 	mov	dptr,#(_KBD_report + 0x0003)
+      000012 F0               [24]  129 	movx	@dptr,a
+      000013 90r00r04         [24]  130 	mov	dptr,#(_KBD_report + 0x0004)
+      000016 F0               [24]  131 	movx	@dptr,a
+      000017 90r00r05         [24]  132 	mov	dptr,#(_KBD_report + 0x0005)
+      00001A F0               [24]  133 	movx	@dptr,a
+      00001B 90r00r06         [24]  134 	mov	dptr,#(_KBD_report + 0x0006)
+      00001E F0               [24]  135 	movx	@dptr,a
+      00001F 90r00r07         [24]  136 	mov	dptr,#(_KBD_report + 0x0007)
+      000022 F0               [24]  137 	movx	@dptr,a
+                                    138 ;	src/usb_composite.c:18: __xdata uint8_t CON_report[]   = {2,0,0};
+      000023 90r00r08         [24]  139 	mov	dptr,#_CON_report
+      000026 74 02            [12]  140 	mov	a,#0x02
+      000028 F0               [24]  141 	movx	@dptr,a
+      000029 90r00r09         [24]  142 	mov	dptr,#(_CON_report + 0x0001)
+      00002C E4               [12]  143 	clr	a
+      00002D F0               [24]  144 	movx	@dptr,a
+      00002E 90r00r0A         [24]  145 	mov	dptr,#(_CON_report + 0x0002)
+      000031 F0               [24]  146 	movx	@dptr,a
+                                    147 ;	src/usb_composite.c:19: __xdata uint8_t MOUSE_report[] = {3,0,0,0,0};
+      000032 90r00r0B         [24]  148 	mov	dptr,#_MOUSE_report
+      000035 74 03            [12]  149 	mov	a,#0x03
+      000037 F0               [24]  150 	movx	@dptr,a
+      000038 90r00r0C         [24]  151 	mov	dptr,#(_MOUSE_report + 0x0001)
+      00003B E4               [12]  152 	clr	a
+      00003C F0               [24]  153 	movx	@dptr,a
+      00003D 90r00r0D         [24]  154 	mov	dptr,#(_MOUSE_report + 0x0002)
+      000040 F0               [24]  155 	movx	@dptr,a
+      000041 90r00r0E         [24]  156 	mov	dptr,#(_MOUSE_report + 0x0003)
+      000044 F0               [24]  157 	movx	@dptr,a
+      000045 90r00r0F         [24]  158 	mov	dptr,#(_MOUSE_report + 0x0004)
+      000048 F0               [24]  159 	movx	@dptr,a
+                                    160 ;	src/usb_composite.c:20: __xdata uint8_t JOY_report[]   = {4,0,0,0};
+      000049 90r00r10         [24]  161 	mov	dptr,#_JOY_report
+      00004C 74 04            [12]  162 	mov	a,#0x04
+      00004E F0               [24]  163 	movx	@dptr,a
+      00004F 90r00r11         [24]  164 	mov	dptr,#(_JOY_report + 0x0001)
+      000052 E4               [12]  165 	clr	a
+      000053 F0               [24]  166 	movx	@dptr,a
+      000054 90r00r12         [24]  167 	mov	dptr,#(_JOY_report + 0x0002)
+      000057 F0               [24]  168 	movx	@dptr,a
+      000058 90r00r13         [24]  169 	mov	dptr,#(_JOY_report + 0x0003)
+      00005B F0               [24]  170 	movx	@dptr,a
+                                    171 ;--------------------------------------------------------
+                                    172 ; Home
+                                    173 ;--------------------------------------------------------
+                                    174 	.area HOME    (CODE)
+                                    175 	.area HOME    (CODE)
+                                    176 ;--------------------------------------------------------
+                                    177 ; code
+                                    178 ;--------------------------------------------------------
+                                    179 	.area CSEG    (CODE)
+                                    180 ;------------------------------------------------------------
+                                    181 ;Allocation info for local variables in function 'KBD_press'
+                                    182 ;------------------------------------------------------------
+                                    183 ;key                       Allocated to registers r6 
+                                    184 ;i                         Allocated to registers r7 
+                                    185 ;------------------------------------------------------------
+                                    186 ;	src/usb_composite.c:43: void KBD_press(uint8_t key) {
+                                    187 ;	-----------------------------------------
+                                    188 ;	 function KBD_press
+                                    189 ;	-----------------------------------------
+      000000                        190 _KBD_press:
+                           000007   191 	ar7 = 0x07
+                           000006   192 	ar6 = 0x06
+                           000005   193 	ar5 = 0x05
+                           000004   194 	ar4 = 0x04
+                           000003   195 	ar3 = 0x03
+                           000002   196 	ar2 = 0x02
+                           000001   197 	ar1 = 0x01
+                           000000   198 	ar0 = 0x00
+      000000 AF 82            [24]  199 	mov	r7,dpl
+                                    200 ;	src/usb_composite.c:47: if(key >= 136) key -= 136;                    // non-printing key/not a modifier?
+      000002 BF 88 00         [24]  201 	cjne	r7,#0x88,00168$
+      000005                        202 00168$:
+      000005 40 08            [24]  203 	jc	00109$
+      000007 8F 06            [24]  204 	mov	ar6,r7
+      000009 EE               [12]  205 	mov	a,r6
+      00000A 24 78            [12]  206 	add	a,#0x78
+      00000C FE               [12]  207 	mov	r6,a
+      00000D 80 40            [24]  208 	sjmp	00128$
+      00000F                        209 00109$:
+                                    210 ;	src/usb_composite.c:48: else if(key >= 128) {                         // modifier key?
+      00000F BF 80 00         [24]  211 	cjne	r7,#0x80,00170$
+      000012                        212 00170$:
+      000012 40 23            [24]  213 	jc	00106$
+                                    214 ;	src/usb_composite.c:49: KBD_report[1] |= (1<<(key-128));            // add modifier to report
+      000014 90r00r01         [24]  215 	mov	dptr,#(_KBD_report + 0x0001)
+      000017 E0               [24]  216 	movx	a,@dptr
+      000018 FD               [12]  217 	mov	r5,a
+      000019 8F 04            [24]  218 	mov	ar4,r7
+      00001B EC               [12]  219 	mov	a,r4
+      00001C 24 80            [12]  220 	add	a,#0x80
+      00001E F5 F0            [12]  221 	mov	b,a
+      000020 05 F0            [12]  222 	inc	b
+      000022 74 01            [12]  223 	mov	a,#0x01
+      000024 80 02            [24]  224 	sjmp	00174$
+      000026                        225 00172$:
+      000026 25 E0            [12]  226 	add	a,acc
+      000028                        227 00174$:
+      000028 D5 F0 FB         [24]  228 	djnz	b,00172$
+      00002B FC               [12]  229 	mov	r4,a
+      00002C 42 05            [12]  230 	orl	ar5,a
+      00002E 90r00r01         [24]  231 	mov	dptr,#(_KBD_report + 0x0001)
+      000031 ED               [12]  232 	mov	a,r5
+      000032 F0               [24]  233 	movx	@dptr,a
+                                    234 ;	src/usb_composite.c:50: key = 0;
+      000033 7E 00            [12]  235 	mov	r6,#0x00
+      000035 80 18            [24]  236 	sjmp	00128$
+      000037                        237 00106$:
+                                    238 ;	src/usb_composite.c:53: key = KBD_map[key];                         // convert ascii to keycode for report
+      000037 EF               [12]  239 	mov	a,r7
+      000038 90r00r00         [24]  240 	mov	dptr,#_KBD_map
+      00003B 93               [24]  241 	movc	a,@a+dptr
+                                    242 ;	src/usb_composite.c:54: if(!key) return;                            // no valid key
+      00003C FE               [12]  243 	mov	r6,a
+      00003D 70 01            [24]  244 	jnz	00102$
+      00003F 22               [24]  245 	ret
+      000040                        246 00102$:
+                                    247 ;	src/usb_composite.c:55: if(key & 0x80) {                            // capital letter/shift character?
+      000040 EE               [12]  248 	mov	a,r6
+      000041 30 E7 0B         [24]  249 	jnb	acc.7,00128$
+                                    250 ;	src/usb_composite.c:56: KBD_report[1] |= 0x02;                    // add left shift modifier
+      000044 90r00r01         [24]  251 	mov	dptr,#(_KBD_report + 0x0001)
+      000047 E0               [24]  252 	movx	a,@dptr
+      000048 44 02            [12]  253 	orl	a,#0x02
+      00004A FF               [12]  254 	mov	r7,a
+      00004B F0               [24]  255 	movx	@dptr,a
+                                    256 ;	src/usb_composite.c:57: key &= 0x7F;                              // remove shift from key itself
+      00004C 53 06 7F         [24]  257 	anl	ar6,#0x7f
+                                    258 ;	src/usb_composite.c:62: for(i=3; i<8; i++) {
+      00004F                        259 00128$:
+      00004F 7F 03            [12]  260 	mov	r7,#0x03
+      000051                        261 00117$:
+                                    262 ;	src/usb_composite.c:63: if(KBD_report[i] == key) return;            // return if already in report
+      000051 EF               [12]  263 	mov	a,r7
+      000052 24r00            [12]  264 	add	a,#_KBD_report
+      000054 F5 82            [12]  265 	mov	dpl,a
+      000056 E4               [12]  266 	clr	a
+      000057 34s00            [12]  267 	addc	a,#(_KBD_report >> 8)
+      000059 F5 83            [12]  268 	mov	dph,a
+      00005B E0               [24]  269 	movx	a,@dptr
+      00005C FD               [12]  270 	mov	r5,a
+      00005D B5 06 01         [24]  271 	cjne	a,ar6,00118$
+      000060 22               [24]  272 	ret
+      000061                        273 00118$:
+                                    274 ;	src/usb_composite.c:62: for(i=3; i<8; i++) {
+      000061 0F               [12]  275 	inc	r7
+      000062 BF 08 00         [24]  276 	cjne	r7,#0x08,00179$
+      000065                        277 00179$:
+      000065 40 EA            [24]  278 	jc	00117$
+                                    279 ;	src/usb_composite.c:67: for(i=3; i<8; i++) {
+      000067 7F 03            [12]  280 	mov	r7,#0x03
+      000069                        281 00119$:
+                                    282 ;	src/usb_composite.c:68: if(KBD_report[i] == 0) {                    // empty slot?
+      000069 EF               [12]  283 	mov	a,r7
+      00006A 24r00            [12]  284 	add	a,#_KBD_report
+      00006C FC               [12]  285 	mov	r4,a
+      00006D E4               [12]  286 	clr	a
+      00006E 34s00            [12]  287 	addc	a,#(_KBD_report >> 8)
+      000070 FD               [12]  288 	mov	r5,a
+      000071 8C 82            [24]  289 	mov	dpl,r4
+      000073 8D 83            [24]  290 	mov	dph,r5
+      000075 E0               [24]  291 	movx	a,@dptr
+      000076 70 0F            [24]  292 	jnz	00120$
+                                    293 ;	src/usb_composite.c:69: KBD_report[i] = key;                      // insert key
+      000078 8C 82            [24]  294 	mov	dpl,r4
+      00007A 8D 83            [24]  295 	mov	dph,r5
+      00007C EE               [12]  296 	mov	a,r6
+      00007D F0               [24]  297 	movx	@dptr,a
+                                    298 ;	src/usb_composite.c:70: KBD_sendReport();                         // send report
+      00007E 75*00 08         [24]  299 	mov	_HID_sendReport_PARM_2,#0x08
+      000081 90r00r00         [24]  300 	mov	dptr,#_KBD_report
+                                    301 ;	src/usb_composite.c:71: return;                                   // and return
+      000084 02r00r00         [24]  302 	ljmp	_HID_sendReport
+      000087                        303 00120$:
+                                    304 ;	src/usb_composite.c:67: for(i=3; i<8; i++) {
+      000087 0F               [12]  305 	inc	r7
+      000088 BF 08 00         [24]  306 	cjne	r7,#0x08,00182$
+      00008B                        307 00182$:
+      00008B 40 DC            [24]  308 	jc	00119$
+                                    309 ;	src/usb_composite.c:74: }
+      00008D 22               [24]  310 	ret
+                                    311 ;------------------------------------------------------------
+                                    312 ;Allocation info for local variables in function 'KBD_release'
+                                    313 ;------------------------------------------------------------
+                                    314 ;key                       Allocated to registers r6 
+                                    315 ;i                         Allocated to registers r7 
+                                    316 ;------------------------------------------------------------
+                                    317 ;	src/usb_composite.c:77: void KBD_release(uint8_t key) {
+                                    318 ;	-----------------------------------------
+                                    319 ;	 function KBD_release
+                                    320 ;	-----------------------------------------
+      00008E                        321 _KBD_release:
+      00008E AF 82            [24]  322 	mov	r7,dpl
+                                    323 ;	src/usb_composite.c:81: if(key >= 136) key -= 136;                    // non-printing key/not a modifier?
+      000090 BF 88 00         [24]  324 	cjne	r7,#0x88,00154$
+      000093                        325 00154$:
+      000093 40 08            [24]  326 	jc	00109$
+      000095 8F 06            [24]  327 	mov	ar6,r7
+      000097 EE               [12]  328 	mov	a,r6
+      000098 24 78            [12]  329 	add	a,#0x78
+      00009A FE               [12]  330 	mov	r6,a
+      00009B 80 41            [24]  331 	sjmp	00123$
+      00009D                        332 00109$:
+                                    333 ;	src/usb_composite.c:82: else if(key >= 128) {                         // modifier key?
+      00009D BF 80 00         [24]  334 	cjne	r7,#0x80,00156$
+      0000A0                        335 00156$:
+      0000A0 40 24            [24]  336 	jc	00106$
+                                    337 ;	src/usb_composite.c:83: KBD_report[1] &= ~(1<<(key-128));           // delete modifier in report
+      0000A2 90r00r01         [24]  338 	mov	dptr,#(_KBD_report + 0x0001)
+      0000A5 E0               [24]  339 	movx	a,@dptr
+      0000A6 FD               [12]  340 	mov	r5,a
+      0000A7 8F 04            [24]  341 	mov	ar4,r7
+      0000A9 EC               [12]  342 	mov	a,r4
+      0000AA 24 80            [12]  343 	add	a,#0x80
+      0000AC F5 F0            [12]  344 	mov	b,a
+      0000AE 05 F0            [12]  345 	inc	b
+      0000B0 74 01            [12]  346 	mov	a,#0x01
+      0000B2 80 02            [24]  347 	sjmp	00160$
+      0000B4                        348 00158$:
+      0000B4 25 E0            [12]  349 	add	a,acc
+      0000B6                        350 00160$:
+      0000B6 D5 F0 FB         [24]  351 	djnz	b,00158$
+      0000B9 F4               [12]  352 	cpl	a
+      0000BA FC               [12]  353 	mov	r4,a
+      0000BB 52 05            [12]  354 	anl	ar5,a
+      0000BD 90r00r01         [24]  355 	mov	dptr,#(_KBD_report + 0x0001)
+      0000C0 ED               [12]  356 	mov	a,r5
+      0000C1 F0               [24]  357 	movx	@dptr,a
+                                    358 ;	src/usb_composite.c:84: key = 0;
+      0000C2 7E 00            [12]  359 	mov	r6,#0x00
+      0000C4 80 18            [24]  360 	sjmp	00123$
+      0000C6                        361 00106$:
+                                    362 ;	src/usb_composite.c:87: key = KBD_map[key];                         // convert ascii to keycode for report
+      0000C6 EF               [12]  363 	mov	a,r7
+      0000C7 90r00r00         [24]  364 	mov	dptr,#_KBD_map
+      0000CA 93               [24]  365 	movc	a,@a+dptr
+                                    366 ;	src/usb_composite.c:88: if(!key) return;                            // no valid key
+      0000CB FE               [12]  367 	mov	r6,a
+      0000CC 70 01            [24]  368 	jnz	00102$
+      0000CE 22               [24]  369 	ret
+      0000CF                        370 00102$:
+                                    371 ;	src/usb_composite.c:89: if(key & 0x80) {                            // capital letter/shift character?
+      0000CF EE               [12]  372 	mov	a,r6
+      0000D0 30 E7 0B         [24]  373 	jnb	acc.7,00123$
+                                    374 ;	src/usb_composite.c:90: KBD_report[1] &= ~0x02;                   // remove shift modifier
+      0000D3 90r00r01         [24]  375 	mov	dptr,#(_KBD_report + 0x0001)
+      0000D6 E0               [24]  376 	movx	a,@dptr
+      0000D7 54 FD            [12]  377 	anl	a,#0xfd
+      0000D9 FF               [12]  378 	mov	r7,a
+      0000DA F0               [24]  379 	movx	@dptr,a
+                                    380 ;	src/usb_composite.c:91: key &= 0x7F;                              // remove shift from key itself
+      0000DB 53 06 7F         [24]  381 	anl	ar6,#0x7f
+                                    382 ;	src/usb_composite.c:96: for(i=3; i<8; i++) {
+      0000DE                        383 00123$:
+      0000DE 7F 03            [12]  384 	mov	r7,#0x03
+      0000E0                        385 00114$:
+                                    386 ;	src/usb_composite.c:97: if(KBD_report[i] == key) KBD_report[i] = 0; // delete key in report
+      0000E0 EF               [12]  387 	mov	a,r7
+      0000E1 24r00            [12]  388 	add	a,#_KBD_report
+      0000E3 FC               [12]  389 	mov	r4,a
+      0000E4 E4               [12]  390 	clr	a
+      0000E5 34s00            [12]  391 	addc	a,#(_KBD_report >> 8)
+      0000E7 FD               [12]  392 	mov	r5,a
+      0000E8 8C 82            [24]  393 	mov	dpl,r4
+      0000EA 8D 83            [24]  394 	mov	dph,r5
+      0000EC E0               [24]  395 	movx	a,@dptr
+      0000ED B5 06 06         [24]  396 	cjne	a,ar6,00115$
+      0000F0 8C 82            [24]  397 	mov	dpl,r4
+      0000F2 8D 83            [24]  398 	mov	dph,r5
+      0000F4 E4               [12]  399 	clr	a
+      0000F5 F0               [24]  400 	movx	@dptr,a
+      0000F6                        401 00115$:
+                                    402 ;	src/usb_composite.c:96: for(i=3; i<8; i++) {
+      0000F6 0F               [12]  403 	inc	r7
+      0000F7 BF 08 00         [24]  404 	cjne	r7,#0x08,00165$
+      0000FA                        405 00165$:
+      0000FA 40 E4            [24]  406 	jc	00114$
+                                    407 ;	src/usb_composite.c:99: KBD_sendReport();                             // send report
+      0000FC 75*00 08         [24]  408 	mov	_HID_sendReport_PARM_2,#0x08
+      0000FF 90r00r00         [24]  409 	mov	dptr,#_KBD_report
+                                    410 ;	src/usb_composite.c:100: }
+      000102 02r00r00         [24]  411 	ljmp	_HID_sendReport
+                                    412 ;------------------------------------------------------------
+                                    413 ;Allocation info for local variables in function 'KBD_type'
+                                    414 ;------------------------------------------------------------
+                                    415 ;key                       Allocated to registers r7 
+                                    416 ;------------------------------------------------------------
+                                    417 ;	src/usb_composite.c:103: void KBD_type(uint8_t key) {
+                                    418 ;	-----------------------------------------
+                                    419 ;	 function KBD_type
+                                    420 ;	-----------------------------------------
+      000105                        421 _KBD_type:
+                                    422 ;	src/usb_composite.c:104: KBD_press(key);
+      000105 AF 82            [24]  423 	mov  r7,dpl
+      000107 C0 07            [24]  424 	push	ar7
+      000109 12r00r00         [24]  425 	lcall	_KBD_press
+      00010C D0 07            [24]  426 	pop	ar7
+                                    427 ;	src/usb_composite.c:105: KBD_release(key);
+      00010E 8F 82            [24]  428 	mov	dpl,r7
+                                    429 ;	src/usb_composite.c:106: }
+      000110 02r00r8E         [24]  430 	ljmp	_KBD_release
+                                    431 ;------------------------------------------------------------
+                                    432 ;Allocation info for local variables in function 'KBD_releaseAll'
+                                    433 ;------------------------------------------------------------
+                                    434 ;i                         Allocated to registers r7 
+                                    435 ;------------------------------------------------------------
+                                    436 ;	src/usb_composite.c:109: void KBD_releaseAll(void) {
+                                    437 ;	-----------------------------------------
+                                    438 ;	 function KBD_releaseAll
+                                    439 ;	-----------------------------------------
+      000113                        440 _KBD_releaseAll:
+                                    441 ;	src/usb_composite.c:111: for(i=7; i; i--) KBD_report[i] = 0;           // delete all keys in report
+      000113 7F 07            [12]  442 	mov	r7,#0x07
+      000115                        443 00102$:
+      000115 EF               [12]  444 	mov	a,r7
+      000116 24r00            [12]  445 	add	a,#_KBD_report
+      000118 F5 82            [12]  446 	mov	dpl,a
+      00011A E4               [12]  447 	clr	a
+      00011B 34s00            [12]  448 	addc	a,#(_KBD_report >> 8)
+      00011D F5 83            [12]  449 	mov	dph,a
+      00011F E4               [12]  450 	clr	a
+      000120 F0               [24]  451 	movx	@dptr,a
+      000121 DF F2            [24]  452 	djnz	r7,00102$
+                                    453 ;	src/usb_composite.c:112: KBD_sendReport();                             // send report
+      000123 75*00 08         [24]  454 	mov	_HID_sendReport_PARM_2,#0x08
+      000126 90r00r00         [24]  455 	mov	dptr,#_KBD_report
+                                    456 ;	src/usb_composite.c:113: }
+      000129 02r00r00         [24]  457 	ljmp	_HID_sendReport
+                                    458 ;------------------------------------------------------------
+                                    459 ;Allocation info for local variables in function 'KBD_print'
+                                    460 ;------------------------------------------------------------
+                                    461 ;str                       Allocated to registers 
+                                    462 ;------------------------------------------------------------
+                                    463 ;	src/usb_composite.c:116: void KBD_print(char* str) {
+                                    464 ;	-----------------------------------------
+                                    465 ;	 function KBD_print
+                                    466 ;	-----------------------------------------
+      00012C                        467 _KBD_print:
+      00012C AD 82            [24]  468 	mov	r5,dpl
+      00012E AE 83            [24]  469 	mov	r6,dph
+      000130 AF F0            [24]  470 	mov	r7,b
+                                    471 ;	src/usb_composite.c:117: while(*str) KBD_type(*str++);
+      000132                        472 00101$:
+      000132 8D 82            [24]  473 	mov	dpl,r5
+      000134 8E 83            [24]  474 	mov	dph,r6
+      000136 8F F0            [24]  475 	mov	b,r7
+      000138 12r00r00         [24]  476 	lcall	__gptrget
+      00013B FC               [12]  477 	mov	r4,a
+      00013C 60 18            [24]  478 	jz	00104$
+      00013E 8C 82            [24]  479 	mov	dpl,r4
+      000140 0D               [12]  480 	inc	r5
+      000141 BD 00 01         [24]  481 	cjne	r5,#0x00,00116$
+      000144 0E               [12]  482 	inc	r6
+      000145                        483 00116$:
+      000145 C0 07            [24]  484 	push	ar7
+      000147 C0 06            [24]  485 	push	ar6
+      000149 C0 05            [24]  486 	push	ar5
+      00014B 12r01r05         [24]  487 	lcall	_KBD_type
+      00014E D0 05            [24]  488 	pop	ar5
+      000150 D0 06            [24]  489 	pop	ar6
+      000152 D0 07            [24]  490 	pop	ar7
+      000154 80 DC            [24]  491 	sjmp	00101$
+      000156                        492 00104$:
+                                    493 ;	src/usb_composite.c:118: }
+      000156 22               [24]  494 	ret
+                                    495 ;------------------------------------------------------------
+                                    496 ;Allocation info for local variables in function 'CON_press'
+                                    497 ;------------------------------------------------------------
+                                    498 ;key                       Allocated to registers r7 
+                                    499 ;------------------------------------------------------------
+                                    500 ;	src/usb_composite.c:125: void CON_press(uint8_t key) {
+                                    501 ;	-----------------------------------------
+                                    502 ;	 function CON_press
+                                    503 ;	-----------------------------------------
+      000157                        504 _CON_press:
+      000157 AF 82            [24]  505 	mov	r7,dpl
+                                    506 ;	src/usb_composite.c:126: CON_report[1] = key;
+      000159 90r00r09         [24]  507 	mov	dptr,#(_CON_report + 0x0001)
+      00015C EF               [12]  508 	mov	a,r7
+      00015D F0               [24]  509 	movx	@dptr,a
+                                    510 ;	src/usb_composite.c:127: CON_sendReport();                             // send report
+      00015E 75*00 03         [24]  511 	mov	_HID_sendReport_PARM_2,#0x03
+      000161 90r00r08         [24]  512 	mov	dptr,#_CON_report
+                                    513 ;	src/usb_composite.c:128: }
+      000164 02r00r00         [24]  514 	ljmp	_HID_sendReport
+                                    515 ;------------------------------------------------------------
+                                    516 ;Allocation info for local variables in function 'CON_release'
+                                    517 ;------------------------------------------------------------
+                                    518 ;	src/usb_composite.c:131: void CON_release(void) {
+                                    519 ;	-----------------------------------------
+                                    520 ;	 function CON_release
+                                    521 ;	-----------------------------------------
+      000167                        522 _CON_release:
+                                    523 ;	src/usb_composite.c:132: CON_report[1] = 0;
+      000167 90r00r09         [24]  524 	mov	dptr,#(_CON_report + 0x0001)
+      00016A E4               [12]  525 	clr	a
+      00016B F0               [24]  526 	movx	@dptr,a
+                                    527 ;	src/usb_composite.c:133: CON_sendReport();
+      00016C 75*00 03         [24]  528 	mov	_HID_sendReport_PARM_2,#0x03
+      00016F 90r00r08         [24]  529 	mov	dptr,#_CON_report
+                                    530 ;	src/usb_composite.c:134: }
+      000172 02r00r00         [24]  531 	ljmp	_HID_sendReport
+                                    532 ;------------------------------------------------------------
+                                    533 ;Allocation info for local variables in function 'CON_type'
+                                    534 ;------------------------------------------------------------
+                                    535 ;key                       Allocated to registers 
+                                    536 ;------------------------------------------------------------
+                                    537 ;	src/usb_composite.c:137: void CON_type(uint8_t key) {
+                                    538 ;	-----------------------------------------
+                                    539 ;	 function CON_type
+                                    540 ;	-----------------------------------------
+      000175                        541 _CON_type:
+                                    542 ;	src/usb_composite.c:138: CON_press(key);
+      000175 12r01r57         [24]  543 	lcall	_CON_press
+                                    544 ;	src/usb_composite.c:139: CON_release();
+                                    545 ;	src/usb_composite.c:140: }
+      000178 02r01r67         [24]  546 	ljmp	_CON_release
+                                    547 ;------------------------------------------------------------
+                                    548 ;Allocation info for local variables in function 'MOUSE_press'
+                                    549 ;------------------------------------------------------------
+                                    550 ;buttons                   Allocated to registers r7 
+                                    551 ;------------------------------------------------------------
+                                    552 ;	src/usb_composite.c:147: void MOUSE_press(uint8_t buttons) {
+                                    553 ;	-----------------------------------------
+                                    554 ;	 function MOUSE_press
+                                    555 ;	-----------------------------------------
+      00017B                        556 _MOUSE_press:
+      00017B AF 82            [24]  557 	mov	r7,dpl
+                                    558 ;	src/usb_composite.c:148: MOUSE_report[1] |= buttons;                   // press button(s)
+      00017D 90r00r0C         [24]  559 	mov	dptr,#(_MOUSE_report + 0x0001)
+      000180 E0               [24]  560 	movx	a,@dptr
+      000181 42 07            [12]  561 	orl	ar7,a
+      000183 90r00r0C         [24]  562 	mov	dptr,#(_MOUSE_report + 0x0001)
+      000186 EF               [12]  563 	mov	a,r7
+      000187 F0               [24]  564 	movx	@dptr,a
+                                    565 ;	src/usb_composite.c:149: MOUSE_sendReport();                           // send HID report
+      000188 75*00 05         [24]  566 	mov	_HID_sendReport_PARM_2,#0x05
+      00018B 90r00r0B         [24]  567 	mov	dptr,#_MOUSE_report
+                                    568 ;	src/usb_composite.c:150: }
+      00018E 02r00r00         [24]  569 	ljmp	_HID_sendReport
+                                    570 ;------------------------------------------------------------
+                                    571 ;Allocation info for local variables in function 'MOUSE_release'
+                                    572 ;------------------------------------------------------------
+                                    573 ;buttons                   Allocated to registers r7 
+                                    574 ;------------------------------------------------------------
+                                    575 ;	src/usb_composite.c:153: void MOUSE_release(uint8_t buttons) {
+                                    576 ;	-----------------------------------------
+                                    577 ;	 function MOUSE_release
+                                    578 ;	-----------------------------------------
+      000191                        579 _MOUSE_release:
+      000191 AF 82            [24]  580 	mov	r7,dpl
+                                    581 ;	src/usb_composite.c:154: MOUSE_report[1] &= ~buttons;                  // release button(s)
+      000193 90r00r0C         [24]  582 	mov	dptr,#(_MOUSE_report + 0x0001)
+      000196 E0               [24]  583 	movx	a,@dptr
+      000197 FE               [12]  584 	mov	r6,a
+      000198 EF               [12]  585 	mov	a,r7
+      000199 F4               [12]  586 	cpl	a
+      00019A 52 06            [12]  587 	anl	ar6,a
+      00019C 90r00r0C         [24]  588 	mov	dptr,#(_MOUSE_report + 0x0001)
+      00019F EE               [12]  589 	mov	a,r6
+      0001A0 F0               [24]  590 	movx	@dptr,a
+                                    591 ;	src/usb_composite.c:155: MOUSE_sendReport();                           // send HID report
+      0001A1 75*00 05         [24]  592 	mov	_HID_sendReport_PARM_2,#0x05
+      0001A4 90r00r0B         [24]  593 	mov	dptr,#_MOUSE_report
+                                    594 ;	src/usb_composite.c:156: }
+      0001A7 02r00r00         [24]  595 	ljmp	_HID_sendReport
+                                    596 ;------------------------------------------------------------
+                                    597 ;Allocation info for local variables in function 'MOUSE_move'
+                                    598 ;------------------------------------------------------------
+                                    599 ;yrel                      Allocated with name '_MOUSE_move_PARM_2'
+                                    600 ;xrel                      Allocated to registers r7 
+                                    601 ;------------------------------------------------------------
+                                    602 ;	src/usb_composite.c:159: void MOUSE_move(int8_t xrel, int8_t yrel) {
+                                    603 ;	-----------------------------------------
+                                    604 ;	 function MOUSE_move
+                                    605 ;	-----------------------------------------
+      0001AA                        606 _MOUSE_move:
+      0001AA AF 82            [24]  607 	mov	r7,dpl
+                                    608 ;	src/usb_composite.c:160: MOUSE_report[2] = (uint8_t)xrel;              // set relative x-movement
+      0001AC 90r00r0D         [24]  609 	mov	dptr,#(_MOUSE_report + 0x0002)
+      0001AF EF               [12]  610 	mov	a,r7
+      0001B0 F0               [24]  611 	movx	@dptr,a
+                                    612 ;	src/usb_composite.c:161: MOUSE_report[3] = (uint8_t)yrel;              // set relative y-movement
+      0001B1 AF*00            [24]  613 	mov	r7,_MOUSE_move_PARM_2
+      0001B3 90r00r0E         [24]  614 	mov	dptr,#(_MOUSE_report + 0x0003)
+      0001B6 EF               [12]  615 	mov	a,r7
+      0001B7 F0               [24]  616 	movx	@dptr,a
+                                    617 ;	src/usb_composite.c:162: MOUSE_sendReport();                           // send HID report
+      0001B8 75*00 05         [24]  618 	mov	_HID_sendReport_PARM_2,#0x05
+      0001BB 90r00r0B         [24]  619 	mov	dptr,#_MOUSE_report
+      0001BE 12r00r00         [24]  620 	lcall	_HID_sendReport
+                                    621 ;	src/usb_composite.c:163: MOUSE_report[2] = 0;                          // reset movements
+      0001C1 90r00r0D         [24]  622 	mov	dptr,#(_MOUSE_report + 0x0002)
+      0001C4 E4               [12]  623 	clr	a
+      0001C5 F0               [24]  624 	movx	@dptr,a
+                                    625 ;	src/usb_composite.c:164: MOUSE_report[3] = 0;
+      0001C6 90r00r0E         [24]  626 	mov	dptr,#(_MOUSE_report + 0x0003)
+      0001C9 F0               [24]  627 	movx	@dptr,a
+                                    628 ;	src/usb_composite.c:165: }
+      0001CA 22               [24]  629 	ret
+                                    630 ;------------------------------------------------------------
+                                    631 ;Allocation info for local variables in function 'MOUSE_wheel'
+                                    632 ;------------------------------------------------------------
+                                    633 ;rel                       Allocated to registers r7 
+                                    634 ;------------------------------------------------------------
+                                    635 ;	src/usb_composite.c:168: void MOUSE_wheel(int8_t rel) {
+                                    636 ;	-----------------------------------------
+                                    637 ;	 function MOUSE_wheel
+                                    638 ;	-----------------------------------------
+      0001CB                        639 _MOUSE_wheel:
+      0001CB AF 82            [24]  640 	mov	r7,dpl
+                                    641 ;	src/usb_composite.c:169: MOUSE_report[4] = (uint8_t)rel;               // set relative wheel movement
+      0001CD 90r00r0F         [24]  642 	mov	dptr,#(_MOUSE_report + 0x0004)
+      0001D0 EF               [12]  643 	mov	a,r7
+      0001D1 F0               [24]  644 	movx	@dptr,a
+                                    645 ;	src/usb_composite.c:170: MOUSE_sendReport();                           // send HID report
+      0001D2 75*00 05         [24]  646 	mov	_HID_sendReport_PARM_2,#0x05
+      0001D5 90r00r0B         [24]  647 	mov	dptr,#_MOUSE_report
+      0001D8 12r00r00         [24]  648 	lcall	_HID_sendReport
+                                    649 ;	src/usb_composite.c:171: MOUSE_report[4] = 0;                          // reset movements
+      0001DB 90r00r0F         [24]  650 	mov	dptr,#(_MOUSE_report + 0x0004)
+      0001DE E4               [12]  651 	clr	a
+      0001DF F0               [24]  652 	movx	@dptr,a
+                                    653 ;	src/usb_composite.c:172: }
+      0001E0 22               [24]  654 	ret
+                                    655 ;------------------------------------------------------------
+                                    656 ;Allocation info for local variables in function 'JOY_press'
+                                    657 ;------------------------------------------------------------
+                                    658 ;buttons                   Allocated to registers r7 
+                                    659 ;------------------------------------------------------------
+                                    660 ;	src/usb_composite.c:179: void JOY_press(uint8_t buttons) {
+                                    661 ;	-----------------------------------------
+                                    662 ;	 function JOY_press
+                                    663 ;	-----------------------------------------
+      0001E1                        664 _JOY_press:
+      0001E1 AF 82            [24]  665 	mov	r7,dpl
+                                    666 ;	src/usb_composite.c:180: JOY_report[1] |= buttons;                     // press button(s)
+      0001E3 90r00r11         [24]  667 	mov	dptr,#(_JOY_report + 0x0001)
+      0001E6 E0               [24]  668 	movx	a,@dptr
+      0001E7 42 07            [12]  669 	orl	ar7,a
+      0001E9 90r00r11         [24]  670 	mov	dptr,#(_JOY_report + 0x0001)
+      0001EC EF               [12]  671 	mov	a,r7
+      0001ED F0               [24]  672 	movx	@dptr,a
+                                    673 ;	src/usb_composite.c:181: JOY_sendReport();                             // send HID report
+      0001EE 75*00 04         [24]  674 	mov	_HID_sendReport_PARM_2,#0x04
+      0001F1 90r00r10         [24]  675 	mov	dptr,#_JOY_report
+                                    676 ;	src/usb_composite.c:182: }
+      0001F4 02r00r00         [24]  677 	ljmp	_HID_sendReport
+                                    678 ;------------------------------------------------------------
+                                    679 ;Allocation info for local variables in function 'JOY_release'
+                                    680 ;------------------------------------------------------------
+                                    681 ;buttons                   Allocated to registers r7 
+                                    682 ;------------------------------------------------------------
+                                    683 ;	src/usb_composite.c:185: void JOY_release(uint8_t buttons) {
+                                    684 ;	-----------------------------------------
+                                    685 ;	 function JOY_release
+                                    686 ;	-----------------------------------------
+      0001F7                        687 _JOY_release:
+      0001F7 AF 82            [24]  688 	mov	r7,dpl
+                                    689 ;	src/usb_composite.c:186: JOY_report[1] &= ~buttons;                    // release button(s)
+      0001F9 90r00r11         [24]  690 	mov	dptr,#(_JOY_report + 0x0001)
+      0001FC E0               [24]  691 	movx	a,@dptr
+      0001FD FE               [12]  692 	mov	r6,a
+      0001FE EF               [12]  693 	mov	a,r7
+      0001FF F4               [12]  694 	cpl	a
+      000200 52 06            [12]  695 	anl	ar6,a
+      000202 90r00r11         [24]  696 	mov	dptr,#(_JOY_report + 0x0001)
+      000205 EE               [12]  697 	mov	a,r6
+      000206 F0               [24]  698 	movx	@dptr,a
+                                    699 ;	src/usb_composite.c:187: JOY_sendReport();                             // send HID report
+      000207 75*00 04         [24]  700 	mov	_HID_sendReport_PARM_2,#0x04
+      00020A 90r00r10         [24]  701 	mov	dptr,#_JOY_report
+                                    702 ;	src/usb_composite.c:188: }
+      00020D 02r00r00         [24]  703 	ljmp	_HID_sendReport
+                                    704 ;------------------------------------------------------------
+                                    705 ;Allocation info for local variables in function 'JOY_move'
+                                    706 ;------------------------------------------------------------
+                                    707 ;yrel                      Allocated with name '_JOY_move_PARM_2'
+                                    708 ;xrel                      Allocated to registers r7 
+                                    709 ;------------------------------------------------------------
+                                    710 ;	src/usb_composite.c:191: void JOY_move(int8_t xrel, int8_t yrel) {
+                                    711 ;	-----------------------------------------
+                                    712 ;	 function JOY_move
+                                    713 ;	-----------------------------------------
+      000210                        714 _JOY_move:
+      000210 AF 82            [24]  715 	mov	r7,dpl
+                                    716 ;	src/usb_composite.c:192: JOY_report[2] = (uint8_t)xrel;                // set x-movement
+      000212 90r00r12         [24]  717 	mov	dptr,#(_JOY_report + 0x0002)
+      000215 EF               [12]  718 	mov	a,r7
+      000216 F0               [24]  719 	movx	@dptr,a
+                                    720 ;	src/usb_composite.c:193: JOY_report[3] = (uint8_t)yrel;                // set y-movement
+      000217 AF*01            [24]  721 	mov	r7,_JOY_move_PARM_2
+      000219 90r00r13         [24]  722 	mov	dptr,#(_JOY_report + 0x0003)
+      00021C EF               [12]  723 	mov	a,r7
+      00021D F0               [24]  724 	movx	@dptr,a
+                                    725 ;	src/usb_composite.c:194: JOY_sendReport();                             // send HID report
+      00021E 75*00 04         [24]  726 	mov	_HID_sendReport_PARM_2,#0x04
+      000221 90r00r10         [24]  727 	mov	dptr,#_JOY_report
+                                    728 ;	src/usb_composite.c:195: }
+      000224 02r00r00         [24]  729 	ljmp	_HID_sendReport
+                                    730 	.area CSEG    (CODE)
+                                    731 	.area CONST   (CODE)
+      000000                        732 _KBD_map:
+      000000 00                     733 	.db #0x00	; 0
+      000001 00                     734 	.db #0x00	; 0
+      000002 00                     735 	.db #0x00	; 0
+      000003 00                     736 	.db #0x00	; 0
+      000004 00                     737 	.db #0x00	; 0
+      000005 00                     738 	.db #0x00	; 0
+      000006 00                     739 	.db #0x00	; 0
+      000007 00                     740 	.db #0x00	; 0
+      000008 2A                     741 	.db #0x2a	; 42
+      000009 2B                     742 	.db #0x2b	; 43
+      00000A 28                     743 	.db #0x28	; 40
+      00000B 00                     744 	.db #0x00	; 0
+      00000C 00                     745 	.db #0x00	; 0
+      00000D 00                     746 	.db #0x00	; 0
+      00000E 00                     747 	.db #0x00	; 0
+      00000F 00                     748 	.db #0x00	; 0
+      000010 00                     749 	.db #0x00	; 0
+      000011 00                     750 	.db #0x00	; 0
+      000012 00                     751 	.db #0x00	; 0
+      000013 00                     752 	.db #0x00	; 0
+      000014 00                     753 	.db #0x00	; 0
+      000015 00                     754 	.db #0x00	; 0
+      000016 00                     755 	.db #0x00	; 0
+      000017 00                     756 	.db #0x00	; 0
+      000018 00                     757 	.db #0x00	; 0
+      000019 00                     758 	.db #0x00	; 0
+      00001A 00                     759 	.db #0x00	; 0
+      00001B 00                     760 	.db #0x00	; 0
+      00001C 00                     761 	.db #0x00	; 0
+      00001D 00                     762 	.db #0x00	; 0
+      00001E 00                     763 	.db #0x00	; 0
+      00001F 00                     764 	.db #0x00	; 0
+      000020 2C                     765 	.db #0x2c	; 44
+      000021 9E                     766 	.db #0x9e	; 158
+      000022 B4                     767 	.db #0xb4	; 180
+      000023 A0                     768 	.db #0xa0	; 160
+      000024 A1                     769 	.db #0xa1	; 161
+      000025 A2                     770 	.db #0xa2	; 162
+      000026 A4                     771 	.db #0xa4	; 164
+      000027 34                     772 	.db #0x34	; 52	'4'
+      000028 A6                     773 	.db #0xa6	; 166
+      000029 A7                     774 	.db #0xa7	; 167
+      00002A A5                     775 	.db #0xa5	; 165
+      00002B AE                     776 	.db #0xae	; 174
+      00002C 36                     777 	.db #0x36	; 54	'6'
+      00002D 2D                     778 	.db #0x2d	; 45
+      00002E 37                     779 	.db #0x37	; 55	'7'
+      00002F 38                     780 	.db #0x38	; 56	'8'
+      000030 27                     781 	.db #0x27	; 39
+      000031 1E                     782 	.db #0x1e	; 30
+      000032 1F                     783 	.db #0x1f	; 31
+      000033 20                     784 	.db #0x20	; 32
+      000034 21                     785 	.db #0x21	; 33
+      000035 22                     786 	.db #0x22	; 34
+      000036 23                     787 	.db #0x23	; 35
+      000037 24                     788 	.db #0x24	; 36
+      000038 25                     789 	.db #0x25	; 37
+      000039 26                     790 	.db #0x26	; 38
+      00003A B3                     791 	.db #0xb3	; 179
+      00003B 33                     792 	.db #0x33	; 51	'3'
+      00003C B6                     793 	.db #0xb6	; 182
+      00003D 2E                     794 	.db #0x2e	; 46
+      00003E B7                     795 	.db #0xb7	; 183
+      00003F B8                     796 	.db #0xb8	; 184
+      000040 9F                     797 	.db #0x9f	; 159
+      000041 84                     798 	.db #0x84	; 132
+      000042 85                     799 	.db #0x85	; 133
+      000043 86                     800 	.db #0x86	; 134
+      000044 87                     801 	.db #0x87	; 135
+      000045 88                     802 	.db #0x88	; 136
+      000046 89                     803 	.db #0x89	; 137
+      000047 8A                     804 	.db #0x8a	; 138
+      000048 8B                     805 	.db #0x8b	; 139
+      000049 8C                     806 	.db #0x8c	; 140
+      00004A 8D                     807 	.db #0x8d	; 141
+      00004B 8E                     808 	.db #0x8e	; 142
+      00004C 8F                     809 	.db #0x8f	; 143
+      00004D 90                     810 	.db #0x90	; 144
+      00004E 91                     811 	.db #0x91	; 145
+      00004F 92                     812 	.db #0x92	; 146
+      000050 93                     813 	.db #0x93	; 147
+      000051 94                     814 	.db #0x94	; 148
+      000052 95                     815 	.db #0x95	; 149
+      000053 96                     816 	.db #0x96	; 150
+      000054 97                     817 	.db #0x97	; 151
+      000055 98                     818 	.db #0x98	; 152
+      000056 99                     819 	.db #0x99	; 153
+      000057 9A                     820 	.db #0x9a	; 154
+      000058 9B                     821 	.db #0x9b	; 155
+      000059 9C                     822 	.db #0x9c	; 156
+      00005A 9D                     823 	.db #0x9d	; 157
+      00005B 2F                     824 	.db #0x2f	; 47
+      00005C 31                     825 	.db #0x31	; 49	'1'
+      00005D 30                     826 	.db #0x30	; 48	'0'
+      00005E A3                     827 	.db #0xa3	; 163
+      00005F AD                     828 	.db #0xad	; 173
+      000060 35                     829 	.db #0x35	; 53	'5'
+      000061 04                     830 	.db #0x04	; 4
+      000062 05                     831 	.db #0x05	; 5
+      000063 06                     832 	.db #0x06	; 6
+      000064 07                     833 	.db #0x07	; 7
+      000065 08                     834 	.db #0x08	; 8
+      000066 09                     835 	.db #0x09	; 9
+      000067 0A                     836 	.db #0x0a	; 10
+      000068 0B                     837 	.db #0x0b	; 11
+      000069 0C                     838 	.db #0x0c	; 12
+      00006A 0D                     839 	.db #0x0d	; 13
+      00006B 0E                     840 	.db #0x0e	; 14
+      00006C 0F                     841 	.db #0x0f	; 15
+      00006D 10                     842 	.db #0x10	; 16
+      00006E 11                     843 	.db #0x11	; 17
+      00006F 12                     844 	.db #0x12	; 18
+      000070 13                     845 	.db #0x13	; 19
+      000071 14                     846 	.db #0x14	; 20
+      000072 15                     847 	.db #0x15	; 21
+      000073 16                     848 	.db #0x16	; 22
+      000074 17                     849 	.db #0x17	; 23
+      000075 18                     850 	.db #0x18	; 24
+      000076 19                     851 	.db #0x19	; 25
+      000077 1A                     852 	.db #0x1a	; 26
+      000078 1B                     853 	.db #0x1b	; 27
+      000079 1C                     854 	.db #0x1c	; 28
+      00007A 1D                     855 	.db #0x1d	; 29
+      00007B AF                     856 	.db #0xaf	; 175
+      00007C B1                     857 	.db #0xb1	; 177
+      00007D B0                     858 	.db #0xb0	; 176
+      00007E B5                     859 	.db #0xb5	; 181
+      00007F 00                     860 	.db #0x00	; 0
+                                    861 	.area CABS    (ABS,CODE)
