@@ -1,28 +1,28 @@
 #include "src/system.h"
 #include "src/delay.h"
 #include "src/i2c.h"
-#include "src/usb_cdc.h"
+// #include "src/usb_cdc.h"
 #include "pca9685.h"
 #include <stdint.h>
 
-void USB_ISR(void) __interrupt(INT_NO_USB) {
-    USB_interrupt();
-}
+// void USB_ISR(void) __interrupt(INT_NO_USB) {
+//     USB_interrupt();
+// }
 
 void main(void) {
     CLK_config();
     DLY_ms(5);
     I2C_init();
-    CDC_init();
+    // CDC_init();
 
     PCA9685_init();
     PCA9685_set_pwm_freq(50); // 50 Hz para servos
 
-    for (int i = 0; i < 10; i++) {
-        CDC_println(".");
-        DLY_ms(100);
-    }
-    CDC_println("PCA9685 Inicializado!");
+    // for (int i = 0; i < 10; i++) {
+    //     CDC_println(".");
+    //     DLY_ms(100);
+    // }
+    // CDC_println("PCA9685 Inicializado!");
 
     // <<< Ahora 4 motores >>>
     uint8_t angle0 = 0, angle1 = 90, angle2 = 180, angle3 = 45;
@@ -72,6 +72,6 @@ void main(void) {
             else angle3--;
         }
 
-        DLY_ms(10); // Movimiento suave para todos
+        DLY_ms(5); // Movimiento suave para todos
     }
 }
