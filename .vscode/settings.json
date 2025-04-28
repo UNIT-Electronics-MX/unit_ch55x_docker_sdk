@@ -1,6 +1,0 @@
-{
-    "files.associations": {
-        "type_traits": "c",
-        "usb_cdc.h": "c"
-    }
-}
