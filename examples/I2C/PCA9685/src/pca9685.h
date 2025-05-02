@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define PCA9685_ADDR 0x41
+#define PCA9685_ADDR 0x40
 
 // Registers
 #define PCA9685_MODE1      0x00

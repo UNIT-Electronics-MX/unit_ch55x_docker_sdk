@@ -9,7 +9,6 @@
 #define PIN_SDA             P31       // I2C SDA
 #define PIN_SCL             P30       // I2C SCL
 #define PIN_ADC             P11       // pin used as ADC input
-#define PIN_PWM             P30       // PWM pin
 #define PIN_PWM1 P30  // Motor 1
 #define PIN_PWM2 P31  // Motor 2
 
