@@ -70,29 +70,29 @@
 inline void CLK_config(void) {
   SAFE_MOD = 0x55;
   SAFE_MOD = 0xAA;                              // enter safe mode
-  
+
   #if F_CPU == 32000000
     __asm__("orl _CLOCK_CFG, #0b00000111");     // 32MHz
   #elif F_CPU == 24000000
     __asm__("anl _CLOCK_CFG, #0b11111000");
-    __asm__("orl _CLOCK_CFG, #0b00000110");     // 24MHz	
+    __asm__("orl _CLOCK_CFG, #0b00000110");     // 24MHz
   #elif F_CPU == 16000000
     __asm__("anl _CLOCK_CFG, #0b11111000");
-    __asm__("orl _CLOCK_CFG, #0b00000101");     // 16MHz	
+    __asm__("orl _CLOCK_CFG, #0b00000101");     // 16MHz
   #elif F_CPU == 12000000
     __asm__("anl _CLOCK_CFG, #0b11111000");
     __asm__("orl _CLOCK_CFG, #0b00000100");     // 12MHz
   #elif F_CPU == 6000000
     __asm__("anl _CLOCK_CFG, #0b11111000");
-    __asm__("orl _CLOCK_CFG, #0b00000011");     // 6MHz	
+    __asm__("orl _CLOCK_CFG, #0b00000011");     // 6MHz
   #elif F_CPU == 3000000
     __asm__("anl _CLOCK_CFG, #0b11111000");
-    __asm__("orl _CLOCK_CFG, #0b00000010");     // 3MHz	
+    __asm__("orl _CLOCK_CFG, #0b00000010");     // 3MHz
   #elif F_CPU == 750000
     __asm__("anl _CLOCK_CFG, #0b11111000");
-    __asm__("orl _CLOCK_CFG, #0b00000001");     // 750kHz	
+    __asm__("orl _CLOCK_CFG, #0b00000001");     // 750kHz
   #elif F_CPU == 187500
-    __asm__("anl _CLOCK_CFG, #0b11111000");     // 187.5kHz		
+    __asm__("anl _CLOCK_CFG, #0b11111000");     // 187.5kHz
   #else
     #warning F_CPU invalid or not set
   #endif
@@ -133,7 +133,7 @@ inline void WDT_start(void) {
 
 inline void WDT_stop(void) {
   SAFE_MOD    = 0x55;
-  SAFE_MOD    = 0xAA; 
+  SAFE_MOD    = 0xAA;
   GLOBAL_CFG &= ~bWDOG_EN;
   SAFE_MOD    = 0x00;
 }

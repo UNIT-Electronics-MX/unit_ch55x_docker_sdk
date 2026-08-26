@@ -2,7 +2,7 @@
 // NeoPixel (Addressable LED) Functions for CH551, CH552 and CH554            * v1.1 *
 // ===================================================================================
 //
-// Basic control functions for 800kHz addressable LEDs (NeoPixel). A simplified 
+// Basic control functions for 800kHz addressable LEDs (NeoPixel). A simplified
 // protocol is used which should work with most LEDs.
 //
 // The following must be defined in config.h:

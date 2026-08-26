@@ -36,7 +36,7 @@ void JOY_move(int8_t xrel, int8_t yrel);    // move joystick
 #define JOY_right()             JOY_move( 127,   0)
 
 // Keyboard LED states
-#define KBD_getState()          (EP2_buffer[0]) 
+#define KBD_getState()          (EP2_buffer[0])
 #define KBD_NUM_LOCK_state      (KBD_getState() & 1)
 #define KBD_CAPS_LOCK_state     ((KBD_getState() >> 1) & 1)
 #define KBD_SCROLL_LOCK_state   ((KBD_getState() >> 2) & 1)
@@ -147,8 +147,8 @@ void JOY_move(int8_t xrel, int8_t yrel);    // move joystick
 /**
  * Scan codes - last N slots in the HID report (usually 6).
  * 0x00 if no key pressed.
- * 
- * If more than N keys are pressed, the HID reports 
+ *
+ * If more than N keys are pressed, the HID reports
  * KEY_ERR_OVF in all slots to indicate this condition.
  */
 

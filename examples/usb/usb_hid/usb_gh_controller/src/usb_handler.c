@@ -216,37 +216,37 @@ void USB_EP0_SETUP(void) {
               switch( ( (uint16_t)USB_setupBuf->wIndexH << 8 ) | USB_setupBuf->wIndexL ) {
                 #ifdef EP4_IN_callback
                 case 0x84:
-                  UEP4_CTRL = UEP4_CTRL & (~bUEP_T_TOG) | UEP_T_RES_STALL;// Set EP4 IN STALL 
+                  UEP4_CTRL = UEP4_CTRL & (~bUEP_T_TOG) | UEP_T_RES_STALL;// Set EP4 IN STALL
                   break;
                 #endif
                 #ifdef EP4_OUT_callback
                 case 0x04:
-                  UEP4_CTRL = UEP4_CTRL & (~bUEP_R_TOG) | UEP_R_RES_STALL;// Set EP4 OUT Stall 
+                  UEP4_CTRL = UEP4_CTRL & (~bUEP_R_TOG) | UEP_R_RES_STALL;// Set EP4 OUT Stall
                   break;
                 #endif
                 #ifdef EP3_IN_callback
                 case 0x83:
-                  UEP3_CTRL = UEP3_CTRL & (~bUEP_T_TOG) | UEP_T_RES_STALL;// Set EP3 IN STALL 
+                  UEP3_CTRL = UEP3_CTRL & (~bUEP_T_TOG) | UEP_T_RES_STALL;// Set EP3 IN STALL
                   break;
                 #endif
                 #ifdef EP3_OUT_callback
                 case 0x03:
-                  UEP3_CTRL = UEP3_CTRL & (~bUEP_R_TOG) | UEP_R_RES_STALL;// Set EP3 OUT Stall 
+                  UEP3_CTRL = UEP3_CTRL & (~bUEP_R_TOG) | UEP_R_RES_STALL;// Set EP3 OUT Stall
                   break;
                 #endif
                 #ifdef EP2_IN_callback
                 case 0x82:
-                  UEP2_CTRL = UEP2_CTRL & (~bUEP_T_TOG) | UEP_T_RES_STALL;// Set EP2 IN STALL 
+                  UEP2_CTRL = UEP2_CTRL & (~bUEP_T_TOG) | UEP_T_RES_STALL;// Set EP2 IN STALL
                   break;
                 #endif
                 #ifdef EP2_OUT_callback
                 case 0x02:
-                  UEP2_CTRL = UEP2_CTRL & (~bUEP_R_TOG) | UEP_R_RES_STALL;// Set EP2 OUT Stall 
+                  UEP2_CTRL = UEP2_CTRL & (~bUEP_R_TOG) | UEP_R_RES_STALL;// Set EP2 OUT Stall
                   break;
                 #endif
                 #ifdef EP1_IN_callback
                 case 0x81:
-                  UEP1_CTRL = UEP1_CTRL & (~bUEP_T_TOG) | UEP_T_RES_STALL;// Set EP1 IN STALL 
+                  UEP1_CTRL = UEP1_CTRL & (~bUEP_T_TOG) | UEP_T_RES_STALL;// Set EP1 IN STALL
                   break;
                 #endif
                 #ifdef EP1_OUT_callback
@@ -299,7 +299,7 @@ void USB_EP0_IN(void) {
 
     case USB_GET_DESCRIPTOR:
       len = SetupLen >= EP0_SIZE ? EP0_SIZE : SetupLen;
-      USB_EP0_copyDescr(len);                     // copy descriptor to Ep0                                
+      USB_EP0_copyDescr(len);                     // copy descriptor to Ep0
       SetupLen  -= len;
       pDescr    += len;
       UEP0_T_LEN = len;
@@ -411,7 +411,7 @@ void USB_interrupt(void) {   // inline not really working in multiple files in S
     }
     UIF_TRANSFER = 0;                       // clear interrupt flag
   }
-    
+
   // Device mode USB bus reset
   if(UIF_BUS_RST) {
     UEP0_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
@@ -425,7 +425,7 @@ void USB_interrupt(void) {   // inline not really working in multiple files in S
     UIF_TRANSFER = 0;
     UIF_BUS_RST  = 0;                       // clear interrupt flag
   }
-    
+
   // USB bus suspend / wake up
   if (UIF_SUSPEND) {
     UIF_SUSPEND = 0;

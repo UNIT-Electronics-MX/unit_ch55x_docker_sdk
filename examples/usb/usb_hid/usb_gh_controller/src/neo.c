@@ -2,7 +2,7 @@
 // NeoPixel (Addressable LED) Functions for CH551, CH552 and CH554            * v1.1 *
 // ===================================================================================
 //
-// Basic control functions for 800kHz addressable LEDs (NeoPixel). A simplified 
+// Basic control functions for 800kHz addressable LEDs (NeoPixel). A simplified
 // protocol is used which should work with most LEDs.
 //
 // The following must be defined in config.h:
@@ -76,10 +76,10 @@
 // ===================================================================================
 // Send a Data Byte to the Pixels String
 // ===================================================================================
-// This is the most time sensitive part. Outside of the function, it must be 
-// ensured that interrupts are disabled and that the time between the 
+// This is the most time sensitive part. Outside of the function, it must be
+// ensured that interrupts are disabled and that the time between the
 // transmission of the individual bytes is less than the pixel's latch time.
-void NEO_sendByte(uint8_t data) { 
+void NEO_sendByte(uint8_t data) {
   data;                 // stop unreferenced argument warning
   __asm
     .even
